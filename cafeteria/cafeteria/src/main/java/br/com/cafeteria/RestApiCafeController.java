@@ -4,10 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.annotation.PostConstruct;
 
 @RestController
 @RequestMapping("/cafes")
@@ -40,5 +48,29 @@ public class RestApiCafeController {
 			}
 		}
 		return Optional.empty();
+	}
+	
+	@PostMapping("/cafes")
+	Cafe postCafe(@RequestBody Cafe cafe) {
+		cafes.add(cafe);
+		return cafe;
+	}
+	
+	@PutMapping("/cafes/{id}")
+	ResponseEntity<Cafe> putCafe(@PathVariable String id, @RequestBody Cafe cafe){
+		int cafeIndice = -1;
+		for(Cafe c: cafes) {
+			if(c.getId().equals(id)) {
+				cafeIndice = cafes.indexOf(c);
+				cafes.set(cafeIndice, cafe);
+			}
+		}
+		return (cafeIndice == -1 ) ? new ResponseEntity<>(postCafe(cafe),
+				HttpStatus.CREATED): new ResponseEntity<>(cafe,HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/{id}")
+	void deleteCafe(@PathVariable String id) {
+		cafes.removeIf(c -> c.getId().equals(id));
 	}
 }
