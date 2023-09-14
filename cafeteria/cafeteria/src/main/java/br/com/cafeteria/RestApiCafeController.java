@@ -57,16 +57,19 @@ public class RestApiCafeController {
 	}
 	
 	@PutMapping("/cafes/{id}")
-	ResponseEntity<Cafe> putCafe(@PathVariable String id, @RequestBody Cafe cafe){
+	ResponseEntity<String> putCafe(@PathVariable String id, @RequestBody Cafe cafe){
 		int cafeIndice = -1;
-		for(Cafe c: cafes) {
-			if(c.getId().equals(id)) {
-				cafeIndice = cafes.indexOf(c);
-				cafes.set(cafeIndice, cafe);
+			for(Cafe c: cafes) {
+				if(c.getId().equals(id)) {
+					cafeIndice = cafes.indexOf(c);
+					cafes.set(cafeIndice, cafe);
+				}
 			}
-		}
-		return (cafeIndice == -1 ) ? new ResponseEntity<>(postCafe(cafe),
-				HttpStatus.CREATED): new ResponseEntity<>(cafe,HttpStatus.OK);
+
+		return(cafeIndice == -1)?
+			new ResponseEntity<String>("Não encontrado", HttpStatus.NOT_FOUND):
+			new ResponseEntity<String>("OKAY", HttpStatus.OK);
+		
 	}
 	
 	@DeleteMapping("/{id}")
